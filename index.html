@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>太空情報站 Space Intelligence Station</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap">
+<style>
+:root{box-sizing:border-box;--gold:#ffe27a;--ok:#3ddc97;--bad:#ff5d73;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:radial-gradient(ellipse at 50% 0,#1d2a8a,#070b2a 70%);color:#fff;font-family:"Huninn","Fredoka","Noto Sans HK","PingFang HK","Microsoft JhengHei",sans-serif;display:flex;justify-content:center;overflow:hidden;user-select:none;-webkit-user-select:none}
+#sky{position:fixed;inset:0;width:100%;height:100%;z-index:0}
+.planet{position:fixed;left:50%;bottom:-62vmin;width:120vmin;height:120vmin;margin-left:-60vmin;border-radius:50%;z-index:0;background:radial-gradient(circle at 35% 25%,#7fe3ff,#2a6fd6 40%,#0d2a6b 75%);box-shadow:0 0 80px 20px rgba(80,160,255,.45),inset -30px -30px 80px rgba(0,0,30,.6);animation:glow 4s ease-in-out infinite}
+.planet:after{content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 30% 30%,rgba(90,220,140,.55) 0 8%,transparent 9%),radial-gradient(circle at 55% 18%,rgba(90,220,140,.5) 0 6%,transparent 7%),radial-gradient(circle at 70% 35%,rgba(255,255,255,.35) 0 9%,transparent 10%)}
+@keyframes glow{50%{box-shadow:0 0 110px 34px rgba(80,160,255,.6),inset -30px -30px 80px rgba(0,0,30,.6)}}
+#app{position:relative;z-index:1;width:100%;max-width:760px;padding:16px;display:flex;flex-direction:column;justify-content:flex-start;text-align:center;max-height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch}
+#start,#game,#end{margin:auto 0}
+input{-webkit-user-select:text;user-select:text}
+h1{font-size:clamp(34px,8vw,58px);margin:.1em 0;background:linear-gradient(90deg,#fff3b0,#ffb347,#ff7eb3);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 14px rgba(255,200,90,.6))}
+.sub{font-size:clamp(15px,3.4vw,22px);color:#bcd2ff;letter-spacing:.2em}
+p{font-size:clamp(16px,3.5vw,22px);line-height:1.6;margin:.4em 0}
+.astro{font-size:clamp(80px,20vw,130px);display:inline-block;animation:float 3s ease-in-out infinite;filter:drop-shadow(0 0 20px rgba(150,190,255,.7))}
+@keyframes float{50%{transform:translateY(-16px) rotate(8deg)}}
+.chips{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:14px 0}
+.chip{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:8px 16px;font-size:clamp(14px,3.2vw,19px)}
+button{font:inherit;color:inherit;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.go{background:linear-gradient(180deg,#ffe98a,#ffb52e);color:#3b2a00;font-weight:800;font-size:clamp(24px,6vw,34px);padding:16px 50px;border-radius:999px;margin-top:14px;box-shadow:0 7px 0 #b97a00,0 0 30px rgba(255,190,60,.6);animation:pulse 1.4s infinite}
+.go:active{transform:translateY(5px);box-shadow:0 2px 0 #b97a00}
+@keyframes pulse{50%{transform:scale(1.06)}}
+.hud{display:flex;justify-content:space-between;align-items:center;font-size:clamp(20px,4.6vw,30px);font-weight:800;margin-bottom:6px}
+#c{color:#ff9d3b;min-width:30%;text-shadow:0 0 14px #ff6a00}
+.track{position:relative;height:30px;margin:4px 6px 16px}
+.track:before{content:"";position:absolute;left:0;right:0;top:12px;height:8px;border-radius:6px;background:rgba(255,255,255,.18)}
+#fill{position:absolute;left:0;top:12px;height:8px;border-radius:6px;background:linear-gradient(90deg,#3ddc97,#ffe27a,#ff7eb3);box-shadow:0 0 12px #ffe27a}
+#rk{position:absolute;top:-4px;font-size:32px;transform:translateX(-50%);filter:drop-shadow(0 0 8px #ff9d3b)}
+.flag{position:absolute;right:-4px;top:-2px;font-size:26px}
+.card{background:linear-gradient(160deg,rgba(255,255,255,.18),rgba(255,255,255,.05));backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:2px solid rgba(255,255,255,.28);border-radius:28px;padding:18px 14px 20px;box-shadow:0 0 40px rgba(90,120,255,.4)}
+.q{font-size:clamp(24px,5.8vw,38px);font-weight:800;line-height:1.4;min-height:3.1em;display:flex;align-items:center;justify-content:center;animation:pop .35s}
+@keyframes pop{from{transform:scale(.85);opacity:0}}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px}
+.opt{border-radius:22px;padding:26px 8px;font-size:clamp(20px,5vw,32px);font-weight:800;box-shadow:0 6px 0 rgba(0,0,0,.35);transition:transform .1s;animation:pop .35s}
+#a{background:linear-gradient(180deg,#5c8dff,#3a54d6)}
+#b{background:linear-gradient(180deg,#ff9f5c,#e0602e)}
+.opt:active{transform:translateY(4px)}
+.opt.ok{background:linear-gradient(180deg,#5bf0b0,#1fb36f)!important;box-shadow:0 0 30px #3ddc97}
+.opt.bad{background:linear-gradient(180deg,#ff7b8d,#d63352)!important}
+#msg{min-height:34px;margin-top:12px;font-size:clamp(16px,3.8vw,22px);color:var(--gold)}
+.rank{font-size:clamp(32px,8vw,52px);font-weight:800;color:var(--gold);margin:.2em 0;text-shadow:0 0 20px rgba(255,200,60,.7);animation:pop .6s}
+.medal{font-size:clamp(64px,15vw,110px);animation:float 2.5s ease-in-out infinite}
+.hide{display:none!important}
+#cd{position:fixed;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;font-size:clamp(110px,34vw,260px);font-weight:900;color:#ffe27a;text-shadow:0 0 40px #ff9d3b;pointer-events:none}
+#cd span{animation:cdp .9s}
+@keyframes cdp{from{transform:scale(2.4);opacity:0}30%{opacity:1}to{transform:scale(.8);opacity:.2}}
+#fl{position:fixed;inset:0;z-index:4;pointer-events:none;opacity:0}
+.fo{animation:fl .45s}
+@keyframes fl{0%{opacity:.5}100%{opacity:0}}
+.shake{animation:shake .4s}
+@keyframes shake{20%,60%{transform:translateX(-12px)}40%,80%{transform:translateX(12px)}}
+.float{position:fixed;z-index:6;font-weight:900;font-size:36px;pointer-events:none;color:#ffe27a;text-shadow:0 0 12px #000;animation:up 1s forwards;transform:translateX(-50%)}
+@keyframes up{to{transform:translate(-50%,-90px);opacity:0}}
+#mute{position:fixed;top:calc(8px + env(safe-area-inset-top,0px));right:10px;z-index:7;background:rgba(255,255,255,.15);border-radius:50%;width:44px;height:44px;font-size:22px}
+.lb{margin:14px auto 0;width:100%;max-width:520px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);border-radius:20px;padding:10px 14px;text-align:left;font-size:clamp(15px,3.6vw,20px)}
+.lb h3{margin:0 0 6px;text-align:center;color:var(--gold);font-size:clamp(17px,4vw,22px)}
+.lb .row{display:flex;gap:10px;align-items:center;padding:5px 6px;border-radius:10px}
+.lb .row.me{background:rgba(255,226,122,.25);outline:1px solid var(--gold)}
+.lb .rk{width:2.2em;text-align:center}
+.lb .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb .sc{font-weight:800;color:var(--gold)}
+.lb .empty{text-align:center;opacity:.85;padding:6px}
+.lb .note{text-align:center;font-size:.75em;opacity:.7;margin-top:4px}
+#nameBox{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:8px 0}
+#nm{font:inherit;font-size:clamp(18px,4.5vw,24px);padding:12px 16px;border-radius:14px;border:2px solid rgba(255,255,255,.4);background:rgba(255,255,255,.15);color:#fff;width:min(260px,60vw);text-align:center}
+#nm::placeholder{color:#c6d3ff}
+.go.small{font-size:clamp(18px,4.5vw,24px);padding:12px 26px;margin-top:0;animation:none}
+.clr{margin-top:12px;background:rgba(255,93,115,.25);border:1px solid #ff7b8d;border-radius:999px;padding:6px 16px;font-size:14px}
+.zh{display:block}
+.en{display:block;font-family:"Fredoka","Huninn",sans-serif;font-size:.56em;font-weight:600;opacity:.92;margin-top:4px;line-height:1.25;color:#d7e4ff}
+.q{flex-direction:column;min-height:4.4em}
+.q .en{font-size:.55em}
+.opt .en{color:#fff}
+.sub2{font-family:"Fredoka","Huninn",sans-serif;font-size:clamp(14px,3vw,19px);color:#bcd2ff;margin-top:2px}
+.chip small,.go small{display:block;opacity:.9;font-size:.78em}
+.go small{font-size:.55em;font-weight:600}
+.go.small small{display:none}
+#msg,#sum,.rank{white-space:pre-line}
+#msg{min-height:92px}
+/* proportion tuning */
+body{font-synthesis:none}
+#app{padding:12px}
+h1{font-size:clamp(28px,6vw,44px)}
+.astro{font-size:clamp(56px,13vw,92px)}
+.sub{font-size:clamp(14px,2.8vw,18px);letter-spacing:.12em}
+p{font-size:clamp(14px,2.8vw,18px);line-height:1.55}
+.chips{margin:10px 0}
+.chip{font-size:clamp(13px,2.6vw,16px);padding:6px 14px}
+.go{font-size:clamp(20px,4.4vw,26px);padding:12px 38px;margin-top:10px}
+.hud{font-size:clamp(16px,3.4vw,22px)}
+.card{padding:14px 12px 16px;border-radius:24px}
+.q{font-size:clamp(20px,4.4vw,30px)}
+.q .en,.en{font-size:.62em}
+.opts{gap:12px}
+.opt{padding:16px 8px;font-size:clamp(18px,3.8vw,26px);border-radius:18px}
+#msg{min-height:76px;font-size:clamp(14px,3vw,18px)}
+.rank{font-size:clamp(24px,5.6vw,38px)}
+.medal{font-size:clamp(52px,11vw,84px)}
+#cd{font-size:clamp(90px,26vw,200px)}
+.float{font-size:28px}
+.lb{font-size:clamp(13px,2.8vw,16px);margin-top:10px;padding:8px 12px}
+.lb h3{font-size:clamp(15px,3.2vw,18px)}
+#nm{font-size:clamp(16px,3.6vw,20px);padding:10px 14px}
+.go.small{font-size:clamp(16px,3.6vw,20px);padding:10px 22px}
+@media (max-height:760px){.astro{font-size:56px}.chips{margin:6px 0}.opt{padding:12px 8px}.lb .row{padding:3px 6px}}
+</style>
+</head>
+<body>
+<canvas id="sky"></canvas>
+<div class="planet"></div>
+<div id="fl"></div>
+<div id="cd" class="hide"></div>
+<button id="mute">🔊</button>
+<div id="app">
+ <div id="start">
+  <div class="astro">🧑‍🚀</div>
+  <h1>📡 太空情報站</h1>
+  <div class="sub2" style="font-size:clamp(18px,4.4vw,28px);font-weight:700;color:#fff">Space Intelligence Station</div>
+  <div class="sub">探索中國航太發展</div>
+  <div class="sub2">Exploring China’s Space Development</div>
+  <div class="chips"><span class="chip">✅ 答對收集情報<small>Correct = intel</small></span><span class="chip">🔥 連擊翻倍<small>Combo bonus</small></span><span class="chip">⚡ 答錯 -2 秒<small>Wrong = -2 sec</small></span></div>
+  <p>你是太空情報員!60 秒內收集愈多情報,火箭飛得愈快!<br><span style="font-size:.8em;color:#d7e4ff">You are a space agent! Collect as much intel as you can in 60 seconds!</span></p>
+  <button class="go" id="goBtn">🚀 啟動情報任務<small>Start Mission</small></button>
+  <div class="lb" data-n="5"></div>
+  <button class="clr hide"></button>
+ </div>
+ <div id="game" class="hide">
+  <div class="hud"><span id="t">⏱ 60</span><span id="c"></span><span id="s">⭐ 0</span></div>
+  <div class="track"><div id="fill"></div><div id="rk">🚀</div><div class="flag">🌕</div></div>
+  <div class="card" id="card">
+   <div class="q" id="q"></div>
+   <div class="opts"><button class="opt" id="a"></button><button class="opt" id="b"></button></div>
+   <div id="msg"></div>
+  </div>
+ </div>
+ <div id="end" class="hide">
+  <div class="medal" id="medal">🏅</div>
+  <div class="rank" id="rank"></div>
+  <p id="sum"></p>
+  <p id="best"></p>
+  <div id="nameBox" class="hide"><input id="nm" maxlength="8" placeholder="輸入暱稱 Nickname" autocomplete="off"><button class="go small" id="subBtn">🏆 上榜 Submit</button></div>
+  <button class="go" id="again">🔄 再玩一次<small>Play Again</small></button>
+  <div class="lb" data-n="10"></div>
+  <button class="clr hide"></button>
+ </div>
+</div>
+<script>
+var Q=[["中國載人航天工程於哪一年正式啟動?", "In which year was the China Manned Space Program launched?", "1992年", "1992", "2003年", "2003", "1992年啟動", "Officially launched in 1992"], ["中國第一位進入太空的航天員是?", "Who was China’s first astronaut to enter space?", "楊利偉", "Yang Liwei", "翟志剛", "Zhai Zhigang", "2003年楊利偉進入太空", "Yang Liwei flew in 2003"], ["中國首次太空漫步的航天員是?", "Who completed China’s first spacewalk?", "翟志剛", "Zhai Zhigang", "楊利偉", "Yang Liwei", "2008年神舟七號", "Shenzhou-7, 2008"], ["天宮空間站距離地面大約多少公里?", "How high above Earth does Tiangong orbit?", "約400公里", "About 400 km", "約4,000公里", "About 4,000 km", "約400公里高的軌道", "It orbits about 400 km up"], ["天宮空間站每多少分鐘繞地球一圈?", "How often does Tiangong circle the Earth?", "90分鐘", "Every 90 minutes", "24小時", "Every 24 hours", "每90分鐘一圈", "One orbit every 90 minutes"], ["航天員24小時內大約見到幾次日出日落?", "How many sunrises and sunsets do astronauts see in 24 hours?", "約16次", "About 16", "1次", "Just 1", "約16次日出日落", "About 16 sunrises and sunsets"], ["航天員依照哪個時間作息?", "Which time do astronauts follow every day?", "北京時間", "Beijing Time", "日出日落", "Sunrise and sunset", "以北京時間作息", "Beijing Time helps them talk to ground control"], ["空間站有一個核心艙和幾個實驗艙?", "The station has one core module and how many lab modules?", "兩個", "Two", "五個", "Five", "核心艙+兩個實驗艙", "One core module plus two lab modules"], ["天宮空間站的核心艙叫什麼名字?", "What is the core module called?", "天和核心艙", "Tianhe", "問天核心艙", "Wentian", "天和核心艙是控制中心", "Tianhe is the control hub"], ["航天員出艙的主要出入口在哪個艙?", "Which module has the main airlock for spacewalks?", "問天實驗艙", "Wentian Lab", "夢天實驗艙", "Mengtian Lab", "問天的氣閘艙是主要出口", "Wentian’s airlock is the main exit"], ["運送食物和配件的無人飛船叫?", "Which unmanned spacecraft delivers food and parts?", "天舟貨運飛船", "Tianzhou Cargo", "神舟載人飛船", "Shenzhou Manned", "天舟是貨運飛船", "Tianzhou carries supplies"], ["神舟載人飛船最多可載幾名航天員?", "How many astronauts can a Shenzhou carry?", "三名", "Three", "六名", "Six", "最多三名", "Up to three astronauts"], ["艙外航天服叫什麼名字?", "What is the extravehicular spacesuit called?", "飛天", "Feitian", "神舟", "Shenzhou", "第二代「飛天」", "The second-generation “Feitian”"], ["航天服面窗鍍了什麼來反射陽光?", "What coats the visor to reflect sunlight?", "純黃金膜", "Pure gold film", "銀色鋁箔", "Silver foil", "面窗鍍上純黃金膜", "A gold film protects the eyes"], ["航天員每天大約運動多久?", "How long do astronauts exercise each day?", "兩小時", "Two hours", "十分鐘", "Ten minutes", "每天兩小時防止肌肉萎縮", "Exercise reduces muscle loss"], ["航天員每日需要攝取多少卡路里?", "How many calories do astronauts need each day?", "2,600至3,200", "2,600 to 3,200", "500至800", "500 to 800", "每日2,600至3,200卡路里", "2,600–3,200 calories a day"], ["太空餐單以哪個原則設計?", "Which principle guides space menus?", "高鈣、高蛋白、低鈉", "High calcium, high protein, low sodium", "高糖、高脂肪", "High sugar, high fat", "防止骨鈣流失、肌肉萎縮", "Helps prevent bone and muscle loss"], ["在太空,植物難以分辨方向,是因為缺少什麼?", "Why do plants lose their sense of direction in space?", "重力", "No gravity", "水分", "No water", "重力是植物的「導航員」", "Gravity is a plant’s “navigator”"], ["航天員已在天宮成功種植哪種作物?", "Which crop has been grown on Tiangong?", "水稻", "Rice", "蘋果樹", "Apple trees", "已成功培植水稻", "Rice has been grown in space"], ["「太空水族箱」養了斑馬魚和哪種植物?", "The “space aquarium” raises zebrafish and which plant?", "金魚藻", "Hornwort", "海帶", "Kelp", "金魚藻負責製造氧氣", "Hornwort provides oxygen"], ["斑馬魚與人類基因有超過多少相似性?", "Zebrafish share over what percentage of genes with humans?", "70%", "70%", "10%", "10%", "超過70%相似", "Over 70% similar"], ["哪種「動物航天員」擁有強大的再生能力?", "Which “animal astronaut” can regenerate strongly?", "渦蟲", "Planarian", "小鼠", "Mouse", "渦蟲用來研究修復能力", "Planarians help study repair"], ["香港首位載荷專家是誰?", "Who is Hong Kong’s first payload expert?", "黎家盈博士", "Dr Lai Ka-ying", "桂海潮教授", "Prof. Gui Haichao", "她入選神舟二十三號", "She joined the Shenzhou-23 crew"], ["黎家盈博士在哪一年入選神舟二十三號乘組?", "In which year was Dr Lai selected for Shenzhou-23?", "2026年", "2026", "1992年", "1992", "2026年5月入選", "Selected in May 2026"], ["「天韻相機」由哪所香港大學研發?", "Which university led the MUSICO camera?", "香港科技大學", "HKUST", "香港大學", "HKU", "MUSICO 是「太空之眼」", "MUSICO is a “Space Eye”"], ["「天韻相機」可以監測什麼?", "What can MUSICO monitor?", "二氧化碳和甲烷", "Carbon dioxide and methane", "雨量和風速", "Rainfall and wind", "監測溫室氣體", "It tracks greenhouse gases"], ["蔡旭哲和宋令東創下什麼世界紀錄?", "What world record did Cai Xuzhe and Song Lingdong set?", "最長單次出艙", "Longest single spacewalk", "最快跑步", "Fastest run", "歷時9小時6分鐘", "It lasted 9 hours 6 minutes"], ["輕度近視的人有機會成為載荷專家嗎?", "Can someone with mild short-sightedness become a payload expert?", "有機會", "Yes, there is a chance", "完全不可能", "Never", "桂海潮教授戴眼鏡執行任務", "Prof. Gui wore glasses on Shenzhou-16"], ["降落傘對返回艙有什麼作用?", "What do parachutes do for the re-entry module?", "幫返回艙減速著陸", "Slow it down for a safe landing", "幫火箭加速", "Speed up the rocket", "令返回艙安全著陸", "Parachutes slow the descent"], ["航天員要完成多少項訓練?", "How many training tasks must astronauts complete?", "200多項", "Over 200", "只有5項", "Only 5", "八大範疇、200多項", "Eight key areas, over 200 tasks"], ["在轉椅上快速旋轉,是訓練哪個功能?", "Spinning fast in a chair trains which function?", "內耳功能", "Inner ear", "視力", "Eyesight", "減輕失重暈眩", "Helps reduce dizziness in space"]];
+var RANKS=[[0,"🌱","情報新丁 Rookie Agent","繼續加油,下次一定更好!\nKeep going, you’ll do better next time!"],[6,"🛰️","見習情報員 Trainee Agent","已經打好基礎!\nA solid start!"],[11,"🚀","合格情報員 Space Agent","表現很棒!\nGreat job!"],[16,"🌟","高級情報官 Senior Officer","太厲害了,你是航天專家!\nAmazing, you’re a space expert!"],[22,"👑","太空情報站長 Station Chief","滿分級表現,全場最強!\nOutstanding, the best of all!"]];
+var $=function(i){return document.getElementById(i)};
+var order,pos,score,combo,right,end,timer,locked,cur,best=0,muted=false,running=false;
+
+/* ---------- 星空 + 粒子 ---------- */
+var cv=$("sky"),cx=cv.getContext("2d"),W,H,stars=[],parts=[],warp=1,warpT=1;
+function size(){var d=window.devicePixelRatio||1;W=innerWidth;H=innerHeight;cv.width=W*d;cv.height=H*d;cx.setTransform(d,0,0,d,0,0)}
+addEventListener("resize",size);size();
+for(var i=0;i<140;i++)stars.push({x:Math.random(),y:Math.random(),z:Math.random()*.9+.1});
+function burst(x,y,cols,n,sp){for(var i=0;i<n;i++){var a=Math.random()*6.28,v=(Math.random()*.7+.3)*sp;
+ parts.push({x:x,y:y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-2,l:1,d:.012+Math.random()*.02,c:cols[i%cols.length],s:Math.random()*5+3,g:.12})}}
+function confetti(){for(var i=0;i<140;i++)parts.push({x:Math.random()*W,y:-20-Math.random()*H*.6,vx:Math.random()*4-2,vy:Math.random()*3+2,l:1,d:.004,c:["#ffe27a","#ff7eb3","#5bf0b0","#7aa5ff","#fff"][i%5],s:Math.random()*7+4,g:.02,r:1})}
+function frame(){cx.clearRect(0,0,W,H);warp+=(warpT-warp)*.06;
+ for(var i=0;i<stars.length;i++){var s=stars[i];s.y+=.0006*s.z*warp*4;if(s.y>1){s.y=0;s.x=Math.random()}
+  var X=s.x*W,Y=s.y*H;cx.strokeStyle="rgba(255,255,255,"+(.35+s.z*.6)+")";cx.lineWidth=s.z*2;cx.beginPath();cx.moveTo(X,Y);cx.lineTo(X,Y-s.z*(2+warp*7));cx.stroke()}
+ for(var j=parts.length-1;j>=0;j--){var p=parts[j];p.x+=p.vx;p.y+=p.vy;p.vy+=p.g;p.l-=p.d;if(p.l<=0||p.y>H+30){parts.splice(j,1);continue}
+  cx.globalAlpha=Math.max(p.l,0);cx.fillStyle=p.c;if(p.r)cx.fillRect(p.x,p.y,p.s,p.s*.6);else{cx.beginPath();cx.arc(p.x,p.y,p.s,0,6.28);cx.fill()}}
+ cx.globalAlpha=1;requestAnimationFrame(frame)}
+frame();
+
+/* ---------- 音效 ---------- */
+var AC;function tone(f,d,t,v,delay){if(muted)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();var o=AC.createOscillator(),g=AC.createGain(),s=AC.currentTime+(delay||0);
+ o.type=t||"sine";o.frequency.value=f;g.gain.setValueAtTime(v||.15,s);g.gain.exponentialRampToValueAtTime(.001,s+d);o.connect(g);g.connect(AC.destination);o.start(s);o.stop(s+d)}catch(e){}}
+var sfx={ok:function(c){tone(520+c*40,.12,"triangle");tone(780+c*40,.18,"triangle",.15,.09)},bad:function(){tone(150,.3,"sawtooth",.12)},tick:function(){tone(440,.1,"square",.08)},go:function(){tone(880,.35,"square",.1)},
+ win:function(){[523,659,784,1047].forEach(function(f,i){tone(f,.25,"triangle",.15,i*.13)})}};
+$("mute").onclick=function(){muted=!muted;this.textContent=muted?"🔇":"🔊"};
+
+/* ---------- 遊戲 ---------- */
+function show(id){["start","game","end"].forEach(function(x){$(x).classList.toggle("hide",x!==id)})}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function flash(c){var f=$("fl");f.style.background=c;f.classList.remove("fo");void f.offsetWidth;f.classList.add("fo")}
+function countdown(){clearInterval(timer);running=false;show("game");$("card").classList.add("hide");warpT=1;upd0();
+ var seq=["3","2","1","發射!<small style=\"display:block;font-size:.3em\">Launch!</small>"],i=0,cd=$("cd");cd.classList.remove("hide");
+ (function step(){cd.innerHTML="<span>"+seq[i]+"</span>";if(i<3)sfx.tick();else sfx.go();i++;
+  if(i<seq.length)setTimeout(step,900);else setTimeout(begin,700)})()}
+function upd0(){order=shuffle(Q.map(function(_,i){return i}));pos=0;score=0;combo=0;right=0;locked=false;$("t").textContent="⏱ 60";$("rk").style.left="0%";$("fill").style.width="0%";upd()}
+function begin(){$("cd").classList.add("hide");$("card").classList.remove("hide");end=Date.now()+60000;running=true;next();timer=setInterval(tick,80)}
+function tick(){var left=end-Date.now();if(left>60000)left=60000;if(left<=0){finish();return}
+ $("t").textContent="⏱ "+Math.ceil(left/1000);var pr=100-left/600;$("rk").style.left=pr+"%";$("fill").style.width=pr+"%";
+ $("t").style.color=left<10000?"#ff7b8d":"#fff"}
+function upd(){$("s").textContent="⭐ "+score;$("c").textContent=combo>=2?"🔥 連擊 Combo x"+combo:"";warpT=1+Math.min(combo,8)*.9}
+function bi(el,zh,en){el.textContent="";var a=document.createElement("span");a.className="zh";a.textContent=zh;var b=document.createElement("span");b.className="en";b.textContent=en;el.appendChild(a);el.appendChild(b)}
+function next(){if(pos>=order.length){order=shuffle(order);pos=0}
+ var q=Q[order[pos++]];cur=q;bi($("q"),q[0],q[1]);$("msg").textContent="";
+ var flip=Math.random()<.5,A=$("a"),B=$("b");
+ bi(A,flip?q[4]:q[2],flip?q[5]:q[3]);bi(B,flip?q[2]:q[4],flip?q[3]:q[5]);A.dataset.r=flip?"0":"1";B.dataset.r=flip?"1":"0";
+ A.className="opt";B.className="opt";var Qe=$("q");Qe.style.animation="none";void Qe.offsetWidth;Qe.style.animation="";locked=false}
+function floatTxt(x,y,t,c){var d=document.createElement("div");d.className="float";d.textContent=t;d.style.left=x+"px";d.style.top=y+"px";if(c)d.style.color=c;document.body.appendChild(d);setTimeout(function(){d.remove()},1000)}
+function pick(btn){if(locked||!running)return;locked=true;var r=btn.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;
+ if(btn.dataset.r==="1"){combo++;right++;var add=1+(combo>=3?1:0)+(combo>=6?1:0);score+=add;btn.classList.add("ok");
+  $("msg").textContent="✅ 情報收集成功! Intel collected!\n"+cur[6]+" · "+cur[7];burst(x,y,["#ffe27a","#5bf0b0","#fff","#7aa5ff"],34,7+combo);floatTxt(x,y-30,"+"+add);flash("#3ddc97");sfx.ok(Math.min(combo,8));
+  if(combo>=3&&combo%3===0)floatTxt(W/2,H*.3,"🔥 連擊 Combo x"+combo+"!","#ff9d3b");
+  upd();setTimeout(function(){if(running)next()},650)}
+ else{combo=0;end-=2000;btn.classList.add("bad");var o=btn.id==="a"?$("b"):$("a");o.classList.add("ok");
+  $("msg").textContent="❌ 正確 Correct: "+cur[2]+" / "+cur[3]+"\n(-2秒 / -2 sec)";burst(x,y,["#ff5d73","#888"],18,4);floatTxt(x,y-30,"-2s","#ff7b8d");flash("#ff5d73");sfx.bad();
+  var c=$("card");c.classList.remove("shake");void c.offsetWidth;c.classList.add("shake");
+  upd();setTimeout(function(){if(running)next()},1200)}}
+function finish(){clearInterval(timer);running=false;locked=true;var r=RANKS[0];RANKS.forEach(function(x){if(score>=x[0])r=x});
+ $("medal").textContent=r[1];$("rank").textContent=r[2];$("sum").textContent="成功收集 "+right+" 項情報,總分 "+score+" 分\nCollected "+right+" pieces of intel · Score "+score+"\n"+r[3];
+ var nb=score>best;if(nb)best=score;$("best").textContent=(nb&&score>0?"🎉 新紀錄! New record! ":"")+"今日最高分 Best today: "+best;
+ warpT=1;show("end");confetti();sfx.win();prepSubmit()}
+$("goBtn").onclick=countdown;$("again").onclick=countdown;
+$("a").onclick=function(){pick(this)};$("b").onclick=function(){pick(this)};
+
+/* ---------- 本日排行榜 ---------- */
+var _d=new Date(),COL="scores-"+_d.getFullYear()+("0"+(_d.getMonth()+1)).slice(-2)+("0"+_d.getDate()).slice(-2),DATE=(_d.getMonth()+1)+"月"+_d.getDate()+"日";
+var ldb=null,isOwner=false,canWrite=true,remote=[],local=[],lastTs=0,submitted=false,lastName="";
+try{local=JSON.parse(localStorage.getItem(COL)||"[]")}catch(e){local=[]}
+function saveLocal(){try{localStorage.setItem(COL,JSON.stringify(local))}catch(e){}}
+function rows(){return (ldb?remote:local).slice().sort(function(a,b){return b.score-a.score||a.ts-b.ts})}
+function renderBoard(){var list=rows();
+ document.querySelectorAll(".lb").forEach(function(el){var n=+el.dataset.n||10;el.textContent="";
+  var h=document.createElement("h3");h.textContent="🏆 本日最高分排行榜 Today’s High Scores ("+DATE+")";el.appendChild(h);
+  if(!list.length){var e=document.createElement("div");e.className="empty";e.textContent="暫時未有紀錄,成為第一位上榜的情報員!\nNo scores yet, be the first agent on the board!";e.style.whiteSpace="pre-line";el.appendChild(e)}
+  list.slice(0,n).forEach(function(it,i){var r=document.createElement("div");r.className="row"+(it.ts===lastTs?" me":"");
+   var k=document.createElement("span");k.className="rk";k.textContent=i<3?["🥇","🥈","🥉"][i]:String(i+1);
+   var m=document.createElement("span");m.className="nm";m.textContent=String(it.name||"無名氏");
+   var c=document.createElement("span");c.className="sc";c.textContent=(+it.score||0);
+   r.appendChild(k);r.appendChild(m);r.appendChild(c);el.appendChild(r)});
+  if(!ldb){var t=document.createElement("div");t.className="note";t.textContent="(只記錄在這部裝置 Saved on this device only)";el.appendChild(t)}});
+ document.querySelectorAll(".clr").forEach(function(b){b.classList.toggle("hide",!isOwner)})}
+function prepSubmit(){submitted=false;var ok=score>0&&(!ldb||canWrite);$("nameBox").classList.toggle("hide",!ok);$("nm").value=lastName;renderBoard()}
+function submitScore(){if(submitted||score<=0)return;submitted=true;
+ var nm=($("nm").value||"").trim().slice(0,8)||"無名氏";lastName=nm;lastTs=Date.now();
+ var e={name:nm,score:score,right:right,ts:lastTs};$("nameBox").classList.add("hide");
+ if(ldb&&canWrite){ldb.collection(COL).add(e).catch(function(){ldb=null;local.push(e);saveLocal();renderBoard()})}
+ else{local.push(e);saveLocal();renderBoard()}}
+$("subBtn").onclick=submitScore;$("nm").onkeydown=function(ev){if(ev.key==="Enter")submitScore()};
+var armed=false;function clrText(t){document.querySelectorAll(".clr").forEach(function(b){b.textContent=t})}
+document.querySelectorAll(".clr").forEach(function(b){b.textContent="🗑 清空 Clear";b.onclick=function(){
+ if(!armed){armed=true;clrText("⚠️ 再按確認 Tap again");setTimeout(function(){armed=false;clrText("🗑 清空 Clear")},3500);return}
+ armed=false;clrText("🗑 清空 Clear");local=[];saveLocal();remote=[];
+ if(ldb){ldb.collection(COL).get().then(function(sn){sn.docs.forEach(function(x){ldb.doc(COL+"/"+x.id).delete().catch(function(){})})}).catch(function(){})}
+ renderBoard()}});
+function initLb(){renderBoard();if(!(window.claude&&claude.use))return;
+ Promise.all([claude.use("db"),claude.use("user")]).then(function(a){var d=a[0],u=a[1];
+  var pre=u?Promise.all([u.isOwner(),u.can("data.write")]).then(function(r){isOwner=!!r[0];canWrite=r[1]!==false}).catch(function(){}):Promise.resolve();
+  return pre.then(function(){renderBoard();if(!d)return;var got=false;
+   var tm=setTimeout(function(){if(!got){ldb=null;renderBoard()}},10000);ldb=d;
+   d.collection(COL).orderBy("score","desc").limit(10).onSnapshot(function(sn){got=true;clearTimeout(tm);ldb=d;
+     remote=sn.docs.map(function(x){return x.data()||{}});renderBoard()},
+    function(){got=true;clearTimeout(tm);ldb=null;renderBoard()})})}).catch(function(){})}
+initLb();
+</script>
+</body>
+</html>
