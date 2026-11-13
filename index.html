@@ -116,7 +116,11 @@ p{font-size:clamp(14px,2.8vw,18px);line-height:1.55}
 #top{position:fixed;top:0;left:0;right:0;z-index:6;padding:calc(8px + env(safe-area-inset-top,0px)) 60px 8px;text-align:center;background:linear-gradient(180deg,rgba(7,11,42,.92),rgba(7,11,42,.62));border-bottom:1px solid rgba(255,226,122,.35);box-shadow:0 4px 18px rgba(0,0,0,.35);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);pointer-events:none}
 #top .tz{font-size:clamp(16px,3.6vw,24px);line-height:1.25;background:linear-gradient(90deg,#fff3b0,#ffb347,#ff7eb3);-webkit-background-clip:text;background-clip:text;color:transparent}
 #top .te{font-family:"Fredoka","Huninn",sans-serif;font-size:clamp(10px,2.2vw,13px);color:#bcd2ff;margin-top:2px;line-height:1.2}
-#app{padding-top:74px}
+body.ingame #app{padding-top:74px}
+#start h1{font-size:clamp(34px,8vw,54px)}
+.home{display:block;margin:12px auto 0;background:rgba(255,255,255,.16);border:2px solid rgba(255,255,255,.45);border-radius:999px;padding:10px 28px;font-size:clamp(15px,3.2vw,19px);color:#fff}
+.home small{display:block;font-size:.72em;opacity:.9}
+.home:active{transform:translateY(2px)}
 #mute{top:calc(6px + env(safe-area-inset-top,0px))}
 </style>
 </head>
@@ -126,10 +130,14 @@ p{font-size:clamp(14px,2.8vw,18px);line-height:1.55}
 <div id="fl"></div>
 <div id="cd" class="hide"></div>
 <button id="mute">🔊</button>
-<div id="top"><div class="tz">📡 太空情報站 · 探索中國航太發展</div><div class="te">Space Intelligence Station · Exploring China’s Space Development</div></div>
+<div id="top" class="hide"><div class="tz">📡 太空情報站 · 探索中國航太發展</div><div class="te">Space Intelligence Station · Exploring China’s Space Development</div></div>
 <div id="app">
  <div id="start">
   <div class="astro">🧑‍🚀</div>
+  <h1>📡 太空情報站</h1>
+  <div class="sub2" style="font-size:clamp(18px,4.2vw,26px);font-weight:700;color:#fff">Space Intelligence Station</div>
+  <div class="sub">探索中國航太發展</div>
+  <div class="sub2">Exploring China’s Space Development</div>
   <div class="chips"><span class="chip">✅ 答對收集情報<small>Correct = intel</small></span><span class="chip">🔥 連擊翻倍<small>Combo bonus</small></span><span class="chip">⚡ 答錯 -2 秒<small>Wrong = -2 sec</small></span></div>
   <p>你是太空情報員!60 秒內收集愈多情報,火箭飛得愈快!<br><span style="font-size:.8em;color:#d7e4ff">You are a space agent! Collect as much intel as you can in 60 seconds!</span></p>
   <button class="go" id="goBtn">🚀 啟動情報任務<small>Start Mission</small></button>
@@ -152,6 +160,7 @@ p{font-size:clamp(14px,2.8vw,18px);line-height:1.55}
   <p id="best"></p>
   <div id="nameBox" class="hide"><input id="nm" maxlength="8" placeholder="輸入暱稱 Nickname" autocomplete="off"><button class="go small" id="subBtn">🏆 上榜 Submit</button></div>
   <button class="go" id="again">🔄 再玩一次<small>Play Again</small></button>
+  <button class="home" id="homeBtn">🏠 返回主頁<small>Back to Home</small></button>
   <div class="lb" data-n="10"></div>
   <button class="clr hide"></button>
  </div>
@@ -186,7 +195,7 @@ var sfx={ok:function(c){tone(520+c*40,.12,"triangle");tone(780+c*40,.18,"triangl
 $("mute").onclick=function(){muted=!muted;this.textContent=muted?"🔇":"🔊"};
 
 /* ---------- 遊戲 ---------- */
-function show(id){["start","game","end"].forEach(function(x){$(x).classList.toggle("hide",x!==id)})}
+function show(id){["start","game","end"].forEach(function(x){$(x).classList.toggle("hide",x!==id)});$("top").classList.toggle("hide",id!=="game");document.body.classList.toggle("ingame",id==="game")}
 function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
 function flash(c){var f=$("fl");f.style.background=c;f.classList.remove("fo");void f.offsetWidth;f.classList.add("fo")}
 function countdown(){clearInterval(timer);running=false;show("game");$("card").classList.add("hide");warpT=1;upd0();
@@ -261,6 +270,7 @@ function initLb(){renderBoard();if(!(window.claude&&claude.use))return;
      remote=sn.docs.map(function(x){return x.data()||{}});renderBoard()},
     function(){got=true;clearTimeout(tm);ldb=null;renderBoard()})})}).catch(function(){})}
 initLb();
+$("homeBtn").onclick=function(){show("start");renderBoard();warpT=1;$("app").scrollTop=0};
 </script>
 </body>
 </html>
