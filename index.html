@@ -112,6 +112,12 @@ p{font-size:clamp(14px,2.8vw,18px);line-height:1.55}
 #nm{font-size:clamp(16px,3.6vw,20px);padding:10px 14px}
 .go.small{font-size:clamp(16px,3.6vw,20px);padding:10px 22px}
 @media (max-height:760px){.astro{font-size:56px}.chips{margin:6px 0}.opt{padding:12px 8px}.lb .row{padding:3px 6px}}
+/* fixed theme banner */
+#top{position:fixed;top:0;left:0;right:0;z-index:6;padding:calc(8px + env(safe-area-inset-top,0px)) 60px 8px;text-align:center;background:linear-gradient(180deg,rgba(7,11,42,.92),rgba(7,11,42,.62));border-bottom:1px solid rgba(255,226,122,.35);box-shadow:0 4px 18px rgba(0,0,0,.35);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);pointer-events:none}
+#top .tz{font-size:clamp(16px,3.6vw,24px);line-height:1.25;background:linear-gradient(90deg,#fff3b0,#ffb347,#ff7eb3);-webkit-background-clip:text;background-clip:text;color:transparent}
+#top .te{font-family:"Fredoka","Huninn",sans-serif;font-size:clamp(10px,2.2vw,13px);color:#bcd2ff;margin-top:2px;line-height:1.2}
+#app{padding-top:74px}
+#mute{top:calc(6px + env(safe-area-inset-top,0px))}
 </style>
 </head>
 <body>
@@ -120,13 +126,10 @@ p{font-size:clamp(14px,2.8vw,18px);line-height:1.55}
 <div id="fl"></div>
 <div id="cd" class="hide"></div>
 <button id="mute">🔊</button>
+<div id="top"><div class="tz">📡 太空情報站 · 探索中國航太發展</div><div class="te">Space Intelligence Station · Exploring China’s Space Development</div></div>
 <div id="app">
  <div id="start">
   <div class="astro">🧑‍🚀</div>
-  <h1>📡 太空情報站</h1>
-  <div class="sub2" style="font-size:clamp(18px,4.4vw,28px);font-weight:700;color:#fff">Space Intelligence Station</div>
-  <div class="sub">探索中國航太發展</div>
-  <div class="sub2">Exploring China’s Space Development</div>
   <div class="chips"><span class="chip">✅ 答對收集情報<small>Correct = intel</small></span><span class="chip">🔥 連擊翻倍<small>Combo bonus</small></span><span class="chip">⚡ 答錯 -2 秒<small>Wrong = -2 sec</small></span></div>
   <p>你是太空情報員!60 秒內收集愈多情報,火箭飛得愈快!<br><span style="font-size:.8em;color:#d7e4ff">You are a space agent! Collect as much intel as you can in 60 seconds!</span></p>
   <button class="go" id="goBtn">🚀 啟動情報任務<small>Start Mission</small></button>
