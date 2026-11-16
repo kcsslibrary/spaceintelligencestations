@@ -275,6 +275,45 @@ h1 .tt,#top .tz .tt{background:linear-gradient(90deg,#fff3b0,#ffb347,#ff7eb3);-w
 h1 .ei{display:inline-block;font-size:.8em;vertical-align:middle;margin:0 .2em;animation:float 3s ease-in-out infinite}
 h1 .e2{animation-delay:-1.5s}
 #top .tz .ei{font-size:.95em}
+/* v9: always-visible captions. Top: half the title size, styled. Bottom: 14px */
+#hdr,#ftr{position:fixed;left:0;right:0;z-index:9;text-align:center;pointer-events:none}
+#hdr{top:0;padding:calc(4px + env(safe-area-inset-top,0px)) 10px 6px;background:linear-gradient(180deg,rgba(7,11,42,.95),rgba(24,32,110,.72));border-style:solid;border-width:0 0 2px;border-image:linear-gradient(90deg,transparent,#ffd24d,#7fb0ff,#ffd24d,transparent) 1;box-shadow:0 4px 20px rgba(0,0,0,.35)}
+.hz{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.1em .5em;font-size:clamp(15px,4vw,27px);font-weight:700;line-height:1.3;letter-spacing:.06em;filter:drop-shadow(0 0 8px rgba(120,190,255,.55))}
+.hz span{background:linear-gradient(90deg,#8fe9ff,#fff 50%,#ffe27a);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hz i,.he i{font-style:normal;font-weight:800;color:#ffd24d;-webkit-text-fill-color:#ffd24d;text-shadow:0 0 10px #ffb300}
+.hz::before,.hz::after{content:"";flex:0 1 7vw;min-width:0;height:2px;border-radius:2px;background:linear-gradient(90deg,transparent,#ffd24d)}
+.hz::after{background:linear-gradient(270deg,transparent,#ffd24d)}
+.he{font-size:clamp(9.5px,2.3vw,14px);color:#cfe0ff;letter-spacing:.04em;line-height:1.3;margin-top:2px}
+#ftr{bottom:0;padding:6px 10px calc(6px + env(safe-area-inset-bottom,0px));font-size:14px;line-height:1.35;color:#dbe7ff;background:linear-gradient(0deg,rgba(7,11,42,.9),rgba(7,11,42,0))}
+#top{top:var(--hdr,46px)}
+#app{padding-top:calc(var(--hdr,46px) + 6px);padding-bottom:calc(var(--ftr,30px) + 6px)}
+body.ingame #app{padding-top:calc(74px + var(--hdr,46px))}
+@media (max-aspect-ratio:5/4){
+ .hz::before,.hz::after{display:none}
+ .flagfix,body.ingame .flagfix{top:calc(var(--hdr,46px) + 8px)}
+ .flaghk{top:calc(var(--hdr,46px) + 8px + var(--cw)*2/3 + 8px)}
+}
+@media (min-aspect-ratio:5/4){
+ .hz{font-size:3.9vh}
+ .he{font-size:2vh}
+ #app{padding-top:calc(var(--hdr,46px) + 6px);padding-bottom:calc(var(--ftr,30px) + 6px)}
+ body.ingame #app{padding-top:calc(11.5vh + var(--hdr,46px))}
+}
+/* v10: no flags while playing; speed-up (correct) and alarm/shake (wrong) effects */
+body.ingame .flagfix,body.ingame .flaghk{display:none}
+@media (min-aspect-ratio:5/4){body.ingame #app{padding-left:3vw;padding-right:3vw}}
+#spd{position:fixed;inset:0;z-index:4;pointer-events:none;opacity:0;background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(255,255,255,0) 0 3deg,rgba(170,215,255,.6) 3deg 3.8deg,rgba(255,255,255,0) 3.8deg 7deg);-webkit-mask-image:radial-gradient(circle at 50% 50%,transparent 30%,#000 90%);mask-image:radial-gradient(circle at 50% 50%,transparent 30%,#000 90%)}
+#spd.go{animation:spd .55s ease-out}
+@keyframes spd{0%{opacity:0;transform:scale(.8)}25%{opacity:var(--o,.5)}100%{opacity:0;transform:scale(1.5)}}
+#alarm{position:fixed;inset:0;z-index:4;pointer-events:none;opacity:0;background:radial-gradient(circle at 50% 50%,rgba(255,0,40,0) 35%,rgba(255,20,50,.55) 100%);box-shadow:inset 0 0 120px 30px rgba(255,0,40,.75)}
+#alarm.go{animation:alarm .9s linear}
+@keyframes alarm{0%{opacity:1}15%{opacity:0}30%{opacity:1}45%{opacity:0}60%{opacity:1}100%{opacity:0}}
+#app.jolt{animation:jolt .5s}
+@keyframes jolt{0%{transform:translate(0,0)}10%{transform:translate(-16px,6px) rotate(-.6deg)}25%{transform:translate(14px,-8px) rotate(.5deg)}40%{transform:translate(-12px,5px)}55%{transform:translate(9px,-4px)}70%{transform:translate(-6px,3px)}100%{transform:translate(0,0)}}
+#rk.dash{animation:dash .5s ease-out}
+@keyframes dash{0%{transform:translateX(-50%) scale(1)}35%{transform:translateX(-50%) scale(1.6) rotate(-8deg);filter:drop-shadow(0 0 22px #ffb347)}100%{transform:translateX(-50%) scale(1)}}
+#rk.hit{animation:hitr .5s}
+@keyframes hitr{0%,100%{transform:translateX(-50%) rotate(0)}20%{transform:translateX(-50%) rotate(-25deg)}40%{transform:translateX(-50%) rotate(20deg)}60%{transform:translateX(-50%) rotate(-14deg)}80%{transform:translateX(-50%) rotate(8deg)}}
 </style>
 </head>
 <body>
@@ -282,8 +321,12 @@ h1 .e2{animation-delay:-1.5s}
 <canvas id="sky"></canvas>
 <div class="planet"></div>
 <div id="fl"></div>
+<div id="spd"></div>
+<div id="alarm"></div>
 <div id="cd" class="hide"></div>
 <button id="mute">🔊</button>
+<div id="hdr"><div class="hz"><span>圖書館</span><i>×</i><span>公民與社會發展</span><i>×</i><span>國民與公民教育</span></div><div class="he">Library <i>×</i> Citizenship and Social Development <i>×</i> National and Civic Education</div></div>
+<div id="ftr">加拿大神召會嘉智中學 PAOC Ka Chi Secondary School</div>
 <svg id="astro" class="astroSvg" viewBox="0 0 120 150" aria-label="太空人"><defs><linearGradient id="vz" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4c7dff"/><stop offset="1" stop-color="#16206a"/></linearGradient><linearGradient id="sw" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#cdd8f2"/></linearGradient></defs><rect x="22" y="64" width="76" height="58" rx="12" fill="#9fb0d8"/><rect x="42" y="106" width="16" height="36" rx="8" fill="url(#sw)"/><rect x="62" y="106" width="16" height="36" rx="8" fill="url(#sw)"/><rect x="40" y="136" width="20" height="12" rx="6" fill="#2e4aa8"/><rect x="60" y="136" width="20" height="12" rx="6" fill="#2e4aa8"/><g transform="rotate(25 30 72)"><rect x="16" y="68" width="16" height="38" rx="8" fill="url(#sw)"/><rect x="19" y="78" width="10" height="7" fill="#DE2910"/><circle cx="24" cy="108" r="8" fill="#2e4aa8"/></g><rect x="32" y="62" width="56" height="54" rx="18" fill="url(#sw)"/><rect x="48" y="76" width="24" height="14" rx="3" fill="#2e4aa8"/><circle cx="54" cy="83" r="2.6" fill="#ff5d73"/><circle cx="60" cy="83" r="2.6" fill="#ffe27a"/><circle cx="66" cy="83" r="2.6" fill="#3ddc97"/><g transform="rotate(-140 90 72)"><rect x="82" y="68" width="16" height="38" rx="8" fill="url(#sw)"/><circle cx="90" cy="108" r="8" fill="#2e4aa8"/></g><circle cx="60" cy="40" r="33" fill="url(#sw)" stroke="#aebde0" stroke-width="2"/><ellipse cx="60" cy="42" rx="25" ry="21" fill="url(#vz)"/><ellipse cx="50" cy="33" rx="9" ry="5" fill="#fff" opacity=".45" transform="rotate(-25 50 33)"/><circle cx="52" cy="44" r="3" fill="#fff"/><circle cx="68" cy="44" r="3" fill="#fff"/><path d="M53 51 Q60 57 67 51" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>
 <svg class="flagsvg flagfix" aria-label="中國國旗"><use href="#cnflag" width="100%" height="100%"/></svg>
 <svg class="flagsvg flaghk" aria-label="香港特別行政區區旗"><use href="#hkflag" width="100%" height="100%"/></svg>
@@ -426,11 +469,11 @@ function next(){if(pos>=order.length){order=shuffle(order);pos=0}
 function floatTxt(x,y,t,c){var d=document.createElement("div");d.className="float";d.textContent=t;d.style.left=x+"px";d.style.top=y+"px";if(c)d.style.color=c;document.body.appendChild(d);setTimeout(function(){d.remove()},1000)}
 function pick(btn){if(locked||!running)return;locked=true;var r=btn.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;
  if(btn.dataset.r==="1"){combo++;right++;var add=1+(combo>=3?1:0)+(combo>=6?1:0);score+=add;btn.classList.add("ok");
-  $("msg").textContent="✅ 情報收集成功! Intel collected!\n"+cur[6]+" · "+cur[7];burst(x,y,["#ffe27a","#5bf0b0","#fff","#7aa5ff"],34,7+combo);floatTxt(x,y-30,"+"+add);flash("#3ddc97");sfx.ok(Math.min(combo,8));
+  $("msg").textContent="✅ 情報收集成功! Intel collected!\n"+cur[6]+" · "+cur[7];burst(x,y,["#ffe27a","#5bf0b0","#fff","#7aa5ff"],34,7+combo);floatTxt(x,y-30,"+"+add);flash("#3ddc97");sfx.ok(Math.min(combo,8));fxFast();
   if(combo>=3&&combo%3===0)floatTxt(W/2,H*.3,"🔥 連擊 Combo x"+combo+"!","#ff9d3b");
   upd();setTimeout(function(){if(running)next()},650)}
  else{combo=0;end-=2000;btn.classList.add("bad");var o=btn.id==="a"?$("b"):$("a");o.classList.add("ok");
-  $("msg").textContent="❌ 正確 Correct: "+cur[2]+" / "+cur[3]+"\n(-2秒 / -2 sec)";burst(x,y,["#ff5d73","#888"],18,4);floatTxt(x,y-30,"-2s","#ff7b8d");flash("#ff5d73");sfx.bad();
+  $("msg").textContent="❌ 正確 Correct: "+cur[2]+" / "+cur[3]+"\n(-2秒 / -2 sec)";burst(x,y,["#ff5d73","#888"],18,4);floatTxt(x,y-30,"-2s","#ff7b8d");flash("#ff5d73");sfx.bad();fxHit();
   var c=$("card");c.classList.remove("shake");void c.offsetWidth;c.classList.add("shake");
   upd();setTimeout(function(){if(running)next()},1200)}}
 function finish(){clearInterval(timer);running=false;locked=true;var r=RANKS[0];RANKS.forEach(function(x){if(score>=x[0])r=x});
@@ -488,6 +531,13 @@ $("homeBtn").onclick=function(){show("start");renderBoard();warpT=1;$("app").scr
   e.style.zIndex=0}
   requestAnimationFrame(f)}
  requestAnimationFrame(f)})();
+function setBars(){var r=document.documentElement.style;r.setProperty("--hdr",$("hdr").offsetHeight+"px");r.setProperty("--ftr",$("ftr").offsetHeight+"px")}
+setBars();addEventListener("resize",setBars);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(setBars);
+function retrig(el,c){el.classList.remove(c);void el.offsetWidth;el.classList.add(c)}
+sfx.whoosh=function(){if(muted)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();var o=AC.createOscillator(),g=AC.createGain(),t=AC.currentTime;o.type="sawtooth";o.frequency.setValueAtTime(180,t);o.frequency.exponentialRampToValueAtTime(1100,t+.35);g.gain.setValueAtTime(.05,t);g.gain.exponentialRampToValueAtTime(.001,t+.4);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+.4)}catch(e){}};
+sfx.alarm=function(){tone(300,.15,"square",.1);tone(300,.15,"square",.1,.22)};
+function fxFast(){warp+=4+Math.min(combo,8)*1.2;retrig($("rk"),"dash");var sp=$("spd");sp.style.setProperty("--o",Math.min(.35+combo*.08,.9));retrig(sp,"go");sfx.whoosh()}
+function fxHit(){warp=.1;retrig($("alarm"),"go");retrig($("app"),"jolt");retrig($("rk"),"hit");sfx.alarm();try{navigator.vibrate&&navigator.vibrate([90,50,90])}catch(e){}}
 </script>
 </body>
 </html>
