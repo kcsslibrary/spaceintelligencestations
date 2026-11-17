@@ -755,7 +755,7 @@ var _d=new Date(),COL="scores-"+_d.getFullYear()+("0"+(_d.getMonth()+1)).slice(-
 var ldb=null,isOwner=false,canWrite=true,remote=[],local=[],lastTs=0,submitted=false,lastName="";
 try{local=JSON.parse(localStorage.getItem(COL)||"[]")}catch(e){local=[]}
 function saveLocal(){try{localStorage.setItem(COL,JSON.stringify(local))}catch(e){}}
-var WEB_URL="";/* ← 貼上 Google Apps Script 網址 Paste your Apps Script web-app URL here */
+var WEB_URL="https://script.google.com/macros/s/AKfycbxy2_BH1v77rJy0MHwcI-SV6GrGjuUF737q6BTDuO4MsvFPlOI_NTUnNU57IJLs7Ypx/exec";/* ← 貼上 Google Apps Script 網址 Paste your Apps Script web-app URL here */
 var web=false;
 function webLoad(){if(!WEB_URL)return;fetch(WEB_URL+(WEB_URL.indexOf("?")<0?"?":"&")+"day="+COL+"&_="+Date.now()).then(function(r){return r.json()}).then(function(a){if(!Array.isArray(a))throw 0;remote=a;web=true;renderBoard()}).catch(function(){web=false;renderBoard()})}
 function rows(){return ((ldb||web)?remote:local).slice().sort(function(a,b){return b.score-a.score||a.ts-b.ts})}
