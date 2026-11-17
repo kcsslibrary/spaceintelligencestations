@@ -738,7 +738,7 @@ function charSvg(L){
  if(L>=3)o+=star4(34,196,9,gold)+star4(214,250,8,"#fff")+star4(200,40,7,gold);
  if(L===4)o+=star4(18,40,10,"#fff")+star4(228,70,9,gold)+star4(44,268,8,gold)+star4(120,6,6,"#fff");
  return o+'</svg>'}
-function finish(){clearInterval(timer);running=false;locked=true;wrongOpen=false;clearTimeout(wrongT);$("wrongBox").classList.add("hide");var r=RANKS[0];RANKS.forEach(function(x){if(score>=x[0])r=x});
+function finish(){webLoad();clearInterval(timer);running=false;locked=true;wrongOpen=false;clearTimeout(wrongT);$("wrongBox").classList.add("hide");var r=RANKS[0];RANKS.forEach(function(x){if(score>=x[0])r=x});
  var idx=RANKS.indexOf(r),pt=r[2].split(" "),zh=pt.shift();
  $("medal").textContent=r[1];
  var rk=$("rank");rk.textContent=zh;var en=document.createElement("small");en.textContent=pt.join(" ");rk.appendChild(en);
@@ -755,7 +755,10 @@ var _d=new Date(),COL="scores-"+_d.getFullYear()+("0"+(_d.getMonth()+1)).slice(-
 var ldb=null,isOwner=false,canWrite=true,remote=[],local=[],lastTs=0,submitted=false,lastName="";
 try{local=JSON.parse(localStorage.getItem(COL)||"[]")}catch(e){local=[]}
 function saveLocal(){try{localStorage.setItem(COL,JSON.stringify(local))}catch(e){}}
-function rows(){return (ldb?remote:local).slice().sort(function(a,b){return b.score-a.score||a.ts-b.ts})}
+var WEB_URL="";/* ← 貼上 Google Apps Script 網址 Paste your Apps Script web-app URL here */
+var web=false;
+function webLoad(){if(!WEB_URL)return;fetch(WEB_URL+(WEB_URL.indexOf("?")<0?"?":"&")+"day="+COL+"&_="+Date.now()).then(function(r){return r.json()}).then(function(a){if(!Array.isArray(a))throw 0;remote=a;web=true;renderBoard()}).catch(function(){web=false;renderBoard()})}
+function rows(){return ((ldb||web)?remote:local).slice().sort(function(a,b){return b.score-a.score||a.ts-b.ts})}
 function renderBoard(){var list=rows();
  document.querySelectorAll(".lb").forEach(function(el){var n=+el.dataset.n||10;el.textContent="";
   var h=document.createElement("h3");h.textContent="🏆 本日最高分排行榜 Today’s High Scores ("+DATE+")";el.appendChild(h);
@@ -765,13 +768,14 @@ function renderBoard(){var list=rows();
    var m=document.createElement("span");m.className="nm";m.textContent=String(it.name||"無名氏");
    var c=document.createElement("span");c.className="sc";c.textContent=(+it.score||0);
    r.appendChild(k);r.appendChild(m);r.appendChild(c);el.appendChild(r)});
-  if(!ldb){var t=document.createElement("div");t.className="note";t.textContent="(只記錄在這部裝置 Saved on this device only)";el.appendChild(t)}});
+  if(!ldb&&!web){var t=document.createElement("div");t.className="note";t.textContent="(只記錄在這部裝置 Saved on this device only)";el.appendChild(t)}});
  document.querySelectorAll(".clr").forEach(function(b){b.classList.toggle("hide",!isOwner)})}
 function prepSubmit(){submitted=false;var ok=score>0&&(!ldb||canWrite);$("nameBox").classList.toggle("hide",!ok);$("nm").value=lastName;renderBoard()}
 function submitScore(){if(submitted||score<=0)return;submitted=true;
  var nm=($("nm").value||"").trim().slice(0,8)||"無名氏";lastName=nm;lastTs=Date.now();
  var e={name:nm,score:score,right:right,ts:lastTs};$("nameBox").classList.add("hide");
- if(ldb&&canWrite){ldb.collection(COL).add(e).catch(function(){ldb=null;local.push(e);saveLocal();renderBoard()})}
+ if(web){remote.push(e);renderBoard();fetch(WEB_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({day:COL,name:nm,score:score,right:right,ts:lastTs})}).then(function(){setTimeout(webLoad,800)}).catch(function(){})}
+ else if(ldb&&canWrite){ldb.collection(COL).add(e).catch(function(){ldb=null;local.push(e);saveLocal();renderBoard()})}
  else{local.push(e);saveLocal();renderBoard()}}
 $("subBtn").onclick=submitScore;$("nm").onkeydown=function(ev){if(ev.key==="Enter")submitScore()};
 var armed=false;function clrText(t){document.querySelectorAll(".clr").forEach(function(b){b.textContent=t})}
@@ -789,7 +793,7 @@ function initLb(){renderBoard();if(!(window.claude&&claude.use))return;
      remote=sn.docs.map(function(x){return x.data()||{}});renderBoard()},
     function(){got=true;clearTimeout(tm);ldb=null;renderBoard()})})}).catch(function(){})}
 
-initLb();
+initLb();webLoad();setInterval(webLoad,20000);
 $("homeBtn").onclick=function(){show("start");renderBoard();warpT=1;$("app").scrollTop=0};
 (function(){var e=$("astro"),t0=performance.now();
  function f(t){if(!e.classList.contains("hide")){var a=-Math.PI/2+(t-t0)/1000*.55,w=parseFloat(getComputedStyle(e).width)||100,h=w*1.25,
